@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ .SiteName }} {{ if .PageTitle }}&middot; {{ .PageTitle }}{{ end }}</title>
+    <meta content='{{ .Description }}' name='description' />
+    <meta itemprop="name" content="{{ .PageTitle }}" />
+    <meta itemprop="description" content="{{ .Description }}" />
+    <meta property="og:title" content="{{ .PageTitle }} &middot; {{ .SiteName }}" />
+    <meta property="og:description" content="{{ .Description }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="{{ .SiteName }} " />
+    <meta property="og:url" content="{{ .SiteURL }}/{{ .PageURL }}" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="{{ .PageTitle }} - {{ .SiteName }}" />
+    <meta name="twitter:description" content="{{ .Description }}" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+
+    <link href='/static/css/normalize.css' type='text/css' rel='stylesheet' />
+    <link href='/static/css/style.css' type='text/css' rel='stylesheet' />
+    {{ partial "header" }}
+  </head>
+  <body>
+    <header>
+    <div class="row full-width">
+      <div class="small-12 medium-10 medium-offset-1 columns">
+        <h1><a href='/'>grepbook</a></h1> 
+        <nav class='header-actions'>
+        <ul>
+          <li><a href="/about">about</a></li>
+        </ul>
+        </nav>
+      </div>
+    </div>
+    </header>
+
+    {{ yield }}
+
+    <footer class="row">
+    <div class='small-12 medium-10 medium-offset-1 columns'>
+    <hr/>
+    Powered by <a href="https://github.com/ejamesc/grepbook">Grepbook</a>.
+    </div>
+    </footer>
+  </body>
+</html>
+
+

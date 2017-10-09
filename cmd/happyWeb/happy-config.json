@@ -1,0 +1,8 @@
+{
+    "path": "cmd/happyWeb/",
+    "databaseURL": "localhost",
+    "databaseName": "happy",
+    "databasePort": 5432,
+    "databaseUser": "happy",
+    "databasePass": "happy"
+}
