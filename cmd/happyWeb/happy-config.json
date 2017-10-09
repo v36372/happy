@@ -1,8 +1,9 @@
 {
     "path": "cmd/happyWeb/",
+    "cookieSecret": "28hc2j",
     "databaseURL": "localhost",
     "databaseName": "happy",
     "databasePort": 5432,
-    "databaseUser": "happy",
-    "databasePass": "happy"
+    "databaseUser": "postgres",
+    "databasePass": "postgres"
 }

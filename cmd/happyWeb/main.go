@@ -8,6 +8,7 @@ import (
 	"path"
 
 	"github.com/gorilla/context"
+	"github.com/gorilla/sessions"
 	"github.com/justinas/alice"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/pkg/errors"
@@ -19,6 +20,7 @@ var configPath string
 
 type App struct {
 	rndr   *render.Render
+	store  *sessions.CookieStore
 	router *Router
 	gp     globalPresenter
 	bm     *bluemonday.Policy
@@ -38,7 +40,7 @@ type globalPresenter struct {
 	SiteURL     string
 }
 
-func SetupApp(r *Router, logger appLogger, templateFolderPath string) *App {
+func SetupApp(r *Router, logger appLogger, cookieSecretKey []byte, templateFolderPath string) *App {
 	rndr := render.New(render.Options{
 		Directory:  templateFolderPath,
 		Extensions: []string{".html"},
@@ -59,6 +61,7 @@ func SetupApp(r *Router, logger appLogger, templateFolderPath string) *App {
 		gp:     gp,
 		bm:     bm,
 		logr:   logger,
+		store:  sessions.NewCookieStore(cookieSecretKey),
 	}
 }
 
@@ -101,11 +104,16 @@ func main() {
 
 	r := NewRouter()
 	logr := newLogger()
-	a := SetupApp(r, logr, templateFolderPath)
+	cookieSecretKey := viper.GetString("cookieSecret")
+
+	a := SetupApp(r, logr, []byte(cookieSecretKey), templateFolderPath)
 
 	common := alice.New(context.ClearHandler, a.loggingHandler, a.recoverHandler)
 
 	r.Get("/", common.Then(a.Wrap(a.IndexHandler(db))))
+
+	r.Post("/song", common.Then(a.Wrap(a.CreateSongHandler(db))))
+
 	r.ServeFiles("/static/*filepath", http.Dir(staticFilePath))
 
 	def := alice.New(responseWriterWrapper).Extend(common)

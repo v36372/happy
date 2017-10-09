@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const SessionName = "session-happy-2842732"
+
 // AppLogger is an interface for logging
 type appLogger interface {
 	Log(str string, v ...interface{})
