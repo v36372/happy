@@ -14,17 +14,21 @@ var app = function(){
 			id: "B7bqAsxee4I"
 		},
 		{
-			provider: "youtube",
-			id: "B7bqAsxee4I"
-		},
-		{
-			provider: "youtube",
-			id: "B7bqAsxee4I"
+			provider: "soundcloud",
+			id: "https://api.soundcloud.com/tracks/103682453"
 		},
 		{
 			provider: "youtube",
 			id: "7dp4GLm7sgo"
 		},
+		{
+			provider: "youtube",
+			id: "B7bqAsxee4I"
+		},
+		{
+			provider: "youtube",
+			id: "B7bqAsxee4I"
+		}
 	];
 	var ytPlayer;
 	var scPlayer;
@@ -37,7 +41,7 @@ var app = function(){
 	}
 
 	var playNextSong = function() {
-		if (index < songs.length) {
+		if (index + 1 < songs.length) {
 			index = index+1;
 			playSong(index);
 		}
