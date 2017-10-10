@@ -6,33 +6,28 @@ var app = function(){
 	$("#hamburger-menu").click(function(){
 		$(".player").toggleClass("playlist");
 	});
+	$("#button-pause").hide();
 
 	var index = 0;
-	var songs = [
-		{
-			provider: "youtube",
-			id: "B7bqAsxee4I"
-		},
-		{
-			provider: "soundcloud",
-			id: "https://api.soundcloud.com/tracks/103682453"
-		},
-		{
-			provider: "youtube",
-			id: "7dp4GLm7sgo"
-		},
-		{
-			provider: "youtube",
-			id: "B7bqAsxee4I"
-		},
-		{
-			provider: "youtube",
-			id: "B7bqAsxee4I"
-		}
-	];
+	var playlistLength = document.getElementsByClassName("track").length;
+	var currentPlaying;
 	var ytPlayer;
 	var scPlayer;
-	var songEnded = false;
+	var songEnded = true;
+	var playerState = "stop";
+
+	var getSong = function(index) {
+		if (index >= playlistLength) {
+			return;
+		}
+
+		var el = document.getElementById("track-" + index);
+		if (el) return {
+			provider: el.getAttribute("provider"),
+			link: el.getAttribute("link"),
+			name: el.getAttribute("name"),
+		}
+	}
 
 	var onStateChange = function(e){
 		if (e.data === 0) {
@@ -41,9 +36,11 @@ var app = function(){
 	}
 
 	var playNextSong = function() {
-		if (index + 1 < songs.length) {
+		if (index + 1 < playlistLength) {
 			index = index+1;
-			playSong(index);
+			playSong(index, false);
+			$("#button-play").hide()
+			$("#button-pause").show()
 		}
 	}
 
@@ -51,17 +48,32 @@ var app = function(){
 		console.log("on song ended");
 		if (!songEnded) {
 			songEnded = true;
+			$("#button-pause").hide()
+			$("#button-play").show()
 			playNextSong();
 		}
 	}
 
-	var playSong = function(index) {
+	var playSong = function(index, resume) {
 		console.log(index);
-		if (songs[index].provider == "youtube") {
+		var song = getSong(index);
+		if (!song) {
+			return;
+		}
+
+		if (song.provider == "youtube") {
+			if (resume) {
+				ytPlayer && ytPlayer.playVideo();
+				return;
+			}
 			songEnded = false;
-			ytPlayer.loadVideoById(songs[index].id);
-		} else if (songs[index].provider == "soundcloud") {
-			scPlayer.load(songs[index].id, {
+			ytPlayer.loadVideoById(song.link);
+		} else if (song.provider == "soundcloud") {
+			if (resume) {
+				scPlayer && scPlayer.play();
+				return;
+			}
+			scPlayer.load(song.link, {
 				visual: false,
 				show_artwork: false,
 				auto_play: true,
@@ -71,6 +83,17 @@ var app = function(){
 					songEnded = false;
 				}
 			})
+		}
+		currentPlaying = song;
+		$("#song-name").text(song.name);
+		$("#song-artist").text(song.name);
+	}
+
+	var pauseSong = function(index) {
+		if (currentPlaying.provider == "youtube") {
+			ytPlayer && ytPlayer.pauseVideo() && (playerState = "pause");
+		} else if (currentPlaying.provider == "soundcloud") {
+			scPlayer && scPlayer.pause() && (playerState = "pause");
 		}
 	}
 
@@ -85,9 +108,11 @@ var app = function(){
 					'onStateChange': onStateChange,
 					'onReady': function() {
 						console.log("readgy");
+						ytPlayer.setPlaybackQuality("small");
+						ytPlayer.playVideo();
 					},
 				}
-			})
+			});
 		}
 	}();
 
@@ -96,14 +121,30 @@ var app = function(){
 			setTimeout(waitForSoundCloud, 250);
 		} else {
 			console.log("sc ready");
-			scPlayer = SC.Widget("soundcloud-player", {})
+			scPlayer = SC.Widget(document.getElementById('soundcloud-player'));
 			scPlayer.bind("finish", onSongEnded);
+			scPlayer.bind("ready", function(){
+				console.log("readyasdhasd");
+				scPlayer.setVolume(0);
+				scPlayer.play();
+				scPlayer.unbind("ready");
+			});
 		}
 	}();
 
+	$("#button-pause").click(function(){
+		pauseSong(index);
+		$("#button-pause").hide()
+		$("#button-play").show()
+	});
+
 	$("#button-play").click(function(){
 		console.log("called")
-		playSong(index);
+		if (playerState == "stop") {
+			playSong(index, false);
+		} else playSong(index, true);
+		$("#button-play").hide()
+		$("#button-pause").show()
 	});
 };
 
