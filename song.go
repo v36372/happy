@@ -1,28 +1,31 @@
 package happy
 
 import (
+	"errors"
 	"fmt"
-	"time"
 )
 
 type Song struct {
-	ID          uint64    `json:"id" db:"id"`
-	Name        string    `json:"name" db:"name"`
-	Artists     []string  `json:"artists"`
-	ArtistLabel string    `json:"artist_label" db:"artist_label"`
-	Link        string    `json:"link" db:"link"`
-	DateCreated time.Time `json:"date_created" db:"date_created"`
+	ID        uint64 `json:"id" db:"id"`
+	Name      string `json:"name" db:"name"`
+	Link      string `json:"link" db:"link"`
+	Provider  string `json:"provider" db:"provider"`
+	Thumbnail string `json:"thumbnail" db:"thumbnail"`
 }
 
-func (db *PGDB) CreateSong(link string) error {
+func (db *PGDB) CreateSong(song *Song) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
 
-	tx.QueryRow(`INSERT INTO song(name, link, artist_label, date_created) 
+	if song == nil {
+		return errors.New("error when creating song, song is nil")
+	}
+
+	tx.QueryRow(`INSERT INTO song(name, link, provider, thumbnail) 
 		VALUES ($1, $2, $3, $4)`,
-		link, link, link, TimeNow())
+		song.Name, song.Link, song.Provider, song.Thumbnail)
 	if err != nil {
 		tx.Rollback()
 		return err

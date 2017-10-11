@@ -12,20 +12,26 @@
 		<link rel="stylesheet" href="static/css/vendor/css/font-awesome.min.css">
 
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
-		<script src="static/js/vendor/sc-api.js"></script>
 		<script src="https://www.youtube.com/iframe_api"></script>
+		<script src="static/js/vendor/sc-api.js"></script>
+		<script src="static/js/index.js"></script>
 	</head>
 
 	<body>
 		<main>
 		<div class='background'>
-			<div></div>
+			<div class="blend"></div>
+			<div id="track-background"></div>
+			<form class="search" role="form" action="/song" method="post">
+				<input style="width:100%;"type="text" name="link" placeholder="Give me a music link from Youtube or Soundcloud"/>
+				<input style="margin-top:1%;margin-left:30%;width:40%;" class="button success" type="submit" value="Add to playlist"/>
+			</form>
 		</div>
 		<div class='container'>
 			<div class='player'>
 				<div class='back'>
 					<header>
-					<a>
+					<a class="back-button">
 						<i class="fa fa-arrow-left" aria-hidden="true"></i>
 					</a>
 					<h1>Playlist</h1>
@@ -35,42 +41,17 @@
 					</div>
 					</header>
 					<ol>
-						<li>
-						<a id="track-0" class="track" provider="youtube" link="7dp4GLm7sgo" name="alsjdd">
-							<img src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/345377/obedear.jpg'>
+						{{ range $i, $e := .SongList }}
+						<li id={{$i}} class="track" provider={{.Provider}} link={{.Link}} name={{.Name}} thumbnail={{.Thumbnail}}>
+						<a>
+							<img src={{.Thumbnail}}>
 							<div>
-								<h1>Obedear</h1>
+								<h1>{{.Name}}</h1>
 							</div>
 						</a>
 						<hr>
 						</li>
-						<li>
-						<a id="track-1" class="track" provider="youtube" link="7dp4GLm7sgo" name="alsjdd">
-							<img src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/345377/obedear.jpg'>
-							<div>
-								<h1>Obedear</h1>
-							</div>
-						</a>
-						<hr>
-						</li>
-						<li>
-						<a id="track-2" class="track" provider="youtube" link="7dp4GLm7sgo" name="alsjdd">
-							<img src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/345377/obedear.jpg'>
-							<div>
-								<h1>Obedear</h1>
-							</div>
-						</a>
-						<hr>
-						</li>
-						<li>
-						<a id="track-3" class="track" provider="youtube" link="7dp4GLm7sgo" name="alsjdd">
-							<img src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/345377/obedear.jpg'>
-							<div>
-								<h1>Obedear</h1>
-							</div>
-						</a>
-						<hr>
-						</li>
+						{{ end }}
 					</ol>
 				</div>
 				<div class='front'>
@@ -80,7 +61,7 @@
 					</div>
 					<div class='meta'>
 						<div class='controls top'>
-							<a class='rewind skip' id="button-previous">
+							<a class='rewind skip' id="button-prev">
 								<i class="fa fa-backward fa-2x" aria-hidden="true"></i>
 							</a>
 							<a class='play'>
@@ -92,17 +73,13 @@
 							</a>
 						</div>
 						<div class='info'>
-							<h1 id="song-name"></h1>
-							<h2 id="song-artist"></h2>
+							<h2 id="song-name"></h2>
 						</div>
 						<div class='controls bottom'>
-							<a>
-								<i class="fa fa-heart" aria-hidden="true"></i>
-							</a>
-							<a>
+							<a id="button-shuffle">
 								<i class="fa fa-random" aria-hidden="true"></i>
 							</a>
-							<a>
+							<a id="button-repeat">
 								<i class="fa fa-repeat" aria-hidden="true"></i>
 							</a>
 							<a class='flip' id="hamburger-menu">
@@ -115,5 +92,4 @@
 		</div>
 		</main>
 	</body>
-	<script src="static/js/index.js"></script>
 </html>

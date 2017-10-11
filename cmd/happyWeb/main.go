@@ -23,8 +23,14 @@ type App struct {
 	store  *sessions.CookieStore
 	router *Router
 	gp     globalPresenter
+	cfg    config
 	bm     *bluemonday.Policy
 	logr   appLogger
+}
+
+type config struct {
+	youtubeAPIKey    string
+	soundcloudAPIKey string
 }
 
 // localPresenter contains the fields nessessary for specific pages.
@@ -44,8 +50,12 @@ func SetupApp(r *Router, logger appLogger, cookieSecretKey []byte, templateFolde
 	rndr := render.New(render.Options{
 		Directory:  templateFolderPath,
 		Extensions: []string{".html"},
-		Layout:     "base",
 	})
+
+	cfg := config{
+		youtubeAPIKey:    viper.GetString("youtubeAPIKey"),
+		soundcloudAPIKey: viper.GetString("soundcloudAPIKey"),
+	}
 
 	gp := globalPresenter{
 		SiteName:    "Happy",
@@ -59,6 +69,7 @@ func SetupApp(r *Router, logger appLogger, cookieSecretKey []byte, templateFolde
 		rndr:   rndr,
 		router: r,
 		gp:     gp,
+		cfg:    cfg,
 		bm:     bm,
 		logr:   logger,
 		store:  sessions.NewCookieStore(cookieSecretKey),

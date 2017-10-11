@@ -1,6 +1,8 @@
 {
     "path": "cmd/happyWeb/",
     "cookieSecret": "28hc2j",
+    "youtubeAPIKey": "AIzaSyDr8XGaQG71ZVhIwhW7Cp8H4WWrmqCdPxQ",
+    "soundcloudAPIKey": "OmTFHKYSMLFqnu2HHucmclAptedxWXkq",
     "databaseURL": "localhost",
     "databaseName": "happy",
     "databasePort": 5432,
