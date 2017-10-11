@@ -3,7 +3,7 @@ CREATE TABLE song (
   id serial PRIMARY KEY,
   name text NOT NULL,
   link text NOT NULL,
-  artist_label text NOT NULL,
-  date_created timestamp without time zone NOT NULL
+  provider text NOT NULL,
+  thumbnail text NOT NULL
 );
 
