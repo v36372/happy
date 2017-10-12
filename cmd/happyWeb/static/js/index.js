@@ -17,12 +17,12 @@ var app = function(){
 	var playerState = "stop";
 	var isInit = -2;
 
-	var getSong = function(index) {
-		if (index >= playlist) {
+	var getSong = function(i) {
+		if (i >= playlist) {
 			return;
 		}
 
-		var el = document.getElementById(index)
+		var el = document.getElementById(i)
 		if (el) return {
 			provider: el.getAttribute("provider"),
 			link: el.getAttribute("link"),
@@ -38,8 +38,6 @@ var app = function(){
 	}
 
 	var playNextSong = function() {
-		console.log(index)
-		console.log(playlist)
 		if (index + 1 < playlist) {
 			index = index+1;
 			playSong(index, false);
@@ -111,11 +109,14 @@ var app = function(){
 
 		// change player info
 		currentPlaying = song;
-		index = i;
+		index = Number(i);
 		$("#song-name").text(song.name);
 		if (song.thumbnail) {
 			$('#track-background').css('background','url("' + song.thumbnail +'") center center/cover')
 			$('.art').attr('src', song.thumbnail);
+		} else {
+			$('#track-background').css('background','url() center center/cover')
+			$('.art').attr('src', '');
 		}
 	}
 

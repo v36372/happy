@@ -96,23 +96,20 @@ func (a *App) CreateSongFromYoutube(link string) (*happy.Song, error) {
 		return nil, errors.Errorf("youtube video with id %s not found", link)
 	}
 
-	quality := []string{"MaxRes", "Standard", "High", "Medium", "Default"}
+	quality := []string{"maxres", "standard", "high", "medium", "default"}
 	thumbnails := ytVideoListResponse.Items[0].Snippet.Thumbnails
 	start := 0
+	fmt.Printf("%+v\n", thumbnails)
 
-	for start < len(quality) && thumbnails[quality[start]] != nil {
+	for start < len(quality)-1 && thumbnails[quality[start]].URL == "" {
 		start++
 	}
 
-	bestThumbnail := ""
-	if start < len(quality) {
-		bestThumbnail = thumbnails[quality[start]].URL
-	}
-
+	fmt.Println(thumbnails[quality[start]].URL)
 	return &happy.Song{
 		Name:      ytVideoListResponse.Items[0].Snippet.Title,
 		Link:      ytVideoListResponse.Items[0].ID,
 		Provider:  "youtube",
-		Thumbnail: bestThumbnail,
+		Thumbnail: thumbnails[quality[start]].URL,
 	}, nil
 }
