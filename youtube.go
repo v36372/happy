@@ -14,9 +14,7 @@ type Snippet struct {
 	Thumbnails Thumbnails `json:"thumbnails"`
 }
 
-type Thumbnails struct {
-	Default Thumbnail `json:"default"`
-}
+type Thumbnails map[string]*Thumbnail
 
 type Thumbnail struct {
 	URL string `json:"url"`

@@ -1,5 +1,5 @@
 var app = function(){
-	$(".back, .header a").click(function(){
+	$(".button-back").click(function(){
 		$(".player").toggleClass("playlist");
 	});
 
@@ -178,6 +178,10 @@ var app = function(){
 		pauseSong(index);
 		$("#button-pause").hide()
 		$("#button-play").show()
+	});
+
+	$("#button-add").click(function(){
+		
 	});
 
 	$("#button-play").click(function(){
