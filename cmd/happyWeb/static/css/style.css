@@ -229,6 +229,10 @@ main {
 	width: 100%;
 }
 
+ol {
+	overflow:scroll;
+}
+
 .button-add {
 	margin-left:60%;
 	display: inline-block;
