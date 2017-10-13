@@ -223,19 +223,10 @@ main {
 	font-weight: 500;
 }
 
-.track-art-container{
-	display:block;
-	height:300px;
-	width:300px;
-	overflow:hidden;
-	vertical-align:top
-}
-
 .art {
 	border-radius: 2px 2px 0 0;
 	display: block;
-	max-width:100%;
-	position:absolute;
+	width: 100%;
 }
 
 .button-add {
