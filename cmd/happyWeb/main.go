@@ -137,14 +137,12 @@ func main() {
 	}
 	// Set up application path
 
-	fmt.Println("done getting env var")
 	staticFilePath := path.Join(appPath, "static")
 	templateFolderPath := path.Join(appPath, "templates")
 
 	// Set up Database
 	var db *happy.PGDB
 	if dev == "true" {
-		fmt.Println("===============dev is true")
 		db, err = happy.OpenDB(fmt.Sprintf("host=%s port=%d user=%s "+
 			"password=%s dbname=%s sslmode=disable",
 			dbURL, dbPort, dbUser, dbPass, dbName))
@@ -152,19 +150,16 @@ func main() {
 			panic(errors.Errorf("Cannot connect to database: %s", err))
 		}
 	} else {
-		fmt.Println("===============dev is false")
 		db, err = happy.OpenDB(dbURL)
 		if err != nil {
 			panic(errors.Errorf("Cannot connect to database: %s", err))
 		}
 	}
-	fmt.Println("done checking db")
 	r := NewRouter()
 	logr := newLogger()
 
 	a := SetupApp(r, logr, []byte(cookieSecret), templateFolderPath)
 
-	fmt.Println("done setup app")
 	common := alice.New(context.ClearHandler, a.loggingHandler, a.recoverHandler)
 
 	r.Get("/", common.Then(a.Wrap(a.IndexHandler(db))))
@@ -172,16 +167,12 @@ func main() {
 	r.Post("/song", common.Then(a.Wrap(a.CreateSongHandler(db))))
 	r.Get("/about", common.Then(a.Wrap(a.AboutHandler())))
 
-	fmt.Println(staticFilePath)
 	r.ServeFiles("/static/*filepath", http.Dir(staticFilePath))
 
-	fmt.Println("done routing")
 	def := alice.New(responseWriterWrapper).Extend(common)
 	r.NotFound = def.Then(responseWriterWrapper(http.HandlerFunc(a.NotFoundHandler)))
 
-	fmt.Println("done handler func")
 	err = http.ListenAndServe(":"+a.cfg.port, r)
-	fmt.Println("done server")
 	if err != nil {
 		log.Println("error on serve server %s", err)
 	}

@@ -1,5 +1,6 @@
 {
     "path": "cmd/happyWeb/",
+    "port": 3000,
 	"isDevelopment": "true",
     "cookieSecret": "28hc2j",
     "youtubeAPIKey": "AIzaSyDr8XGaQG71ZVhIwhW7Cp8H4WWrmqCdPxQ",
