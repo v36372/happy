@@ -25,18 +25,18 @@ func (a *App) CreateSongHandler(db *happy.PGDB) HandlerWithError {
 			return newError(400, "song link cannot be empty", nil)
 		}
 
-		link := songLink[strings.Index(songLink, "=")+1:]
+		youtubeID := songLink[strings.Index(songLink, "=")+1:]
 
 		var song *happy.Song
 		var err error
 		if strings.Index(songLink, YT) != -1 {
-			song, err = a.CreateSongFromYoutube(link)
+			song, err = a.CreateSongFromYoutube(youtubeID)
 			if err != nil {
 				a.logr.Log("error on CreateSongHandler, CreateSongFromYoutube fails: %s", err)
 				return newError(500, "error on CreateSongHandler, CreateSongFromYoutube fails: %s", err)
 			}
 		} else if strings.Index(songLink, SC) != -1 {
-			song, err = a.CreateSongFromSoundcloud(link)
+			song, err = a.CreateSongFromSoundcloud(songLink)
 			if err != nil {
 				a.logr.Log("error on CreateSongHandler, CreateSongFromSoundcloud fails: %s", err)
 				return newError(500, "error on CreateSongHandler, CreateSongFromSoundcloud fails: %s", err)
@@ -99,13 +99,15 @@ func (a *App) CreateSongFromYoutube(link string) (*happy.Song, error) {
 	quality := []string{"maxres", "standard", "high", "medium", "default"}
 	thumbnails := ytVideoListResponse.Items[0].Snippet.Thumbnails
 	start := 0
-	fmt.Printf("%+v\n", thumbnails)
 
-	for start < len(quality)-1 && thumbnails[quality[start]].URL == "" {
+	for start < len(quality)-1 {
+		_, ok := thumbnails[quality[start]]
+		if ok {
+			break
+		}
 		start++
 	}
 
-	fmt.Println(thumbnails[quality[start]].URL)
 	return &happy.Song{
 		Name:      ytVideoListResponse.Items[0].Snippet.Title,
 		Link:      ytVideoListResponse.Items[0].ID,

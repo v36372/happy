@@ -37,13 +37,6 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
-.search { 
-	margin-top: 1%;
-	margin-left: 35%;
-	margin-right: 35%;
-	z-index: 1;
-}
-
 main {
 	-webkit-perspective: 1000px;
 	perspective: 1000px;
@@ -128,14 +121,14 @@ main {
 	background: white;
 	border-radius: 2px;
 	box-shadow: 0 0 15px rgba(123, 22, 40, 0.2);
+	width:300px;
+	height:475px;
 }
 
 .back {
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 100%;
-	height: 100%;
 }
 .back header {
 	display: -webkit-box;
@@ -153,7 +146,7 @@ main {
 	display: block;
 	padding: 0 5px 3px !important;
 	border-radius: 2px;
-	margin-right: 12px;
+	margin-top:8px;
 }
 .back a {
 	display: -webkit-box;
@@ -223,27 +216,34 @@ main {
 	font-weight: 500;
 }
 
+
+.track-art-container {
+	height:300px;
+	display:flex;
+	align-items:center;
+	background: black;
+}
+
 .art {
 	border-radius: 2px 2px 0 0;
 	display: block;
 	width: 100%;
 }
 
-ol {
-	overflow:scroll;
+.playlist-scroll {
+	max-height:85%;
+	overflow:auto;
 }
 
 .button-add {
-	margin-left:60%;
-	display: inline-block;
-	position: relative;
-	height: 60px;
-	float: right;
-	position: relative;
+	margin-left:59%;
+	margin-top:3%;
+	height: 30px;
+	width: 30px;
 }
 
 input[type="text"] {
-	height: 60px;
+	height: 40px;
 	font-size: 17px;
 	font-weight: 300;
 	margin-bottom: 6px;
@@ -251,25 +251,27 @@ input[type="text"] {
 	border: none;
 	outline: none;
 	color: #555;
-	padding: 3px;
-	padding-right: 60px;
-	width: 0px;
+	padding-right: 36px;
+	width:0;
 	position: absolute;
-	top: 0;
-	right: 0;
+	z-index:3;
+	top: -12px;
+	right: -3px;
 	background: none;
-	z-index: 3;
 	transition: width .4s cubic-bezier(0.000, 0.795, 0.000, 1.000);
 	cursor: pointer;
 }
 
 input[type="text"]:focus {
-	width: 250px;
-	z-index: 1;
+	width: 215px;
 	cursor: text;
 }
 i[type="submit"] {
-	margin-top:50%;
+	margin-top:-9px;
+	z-index:2;
+	cursor: pointer;
+	position:absolute;
+	margin-left:-5px;
 }
 
 .controls {
@@ -315,6 +317,7 @@ i[type="submit"] {
 }
 .meta {
 	text-align: center;
+	height: 175px;
 }
 .meta time {
 	display: -webkit-box;
