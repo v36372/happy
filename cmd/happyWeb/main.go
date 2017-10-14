@@ -170,12 +170,16 @@ func main() {
 	r.Post("/song", common.Then(a.Wrap(a.CreateSongHandler(db))))
 	r.Get("/about", common.Then(a.Wrap(a.AboutHandler())))
 
+	fmt.Println(staticFilePath)
 	r.ServeFiles("/static/*filepath", http.Dir(staticFilePath))
 
+	fmt.Println("done routing")
 	def := alice.New(responseWriterWrapper).Extend(common)
 	r.NotFound = def.Then(responseWriterWrapper(http.HandlerFunc(a.NotFoundHandler)))
 
+	fmt.Println("done handler func")
 	err = http.ListenAndServe(":3000", r)
+	fmt.Println("done server")
 	if err != nil {
 		log.Println("error on serve server %s", err)
 	}
