@@ -1,22 +1,23 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"happy"
+	"log"
 	"net/http"
+	"os"
 	"path"
+	"runtime"
 
 	"github.com/gorilla/context"
 	"github.com/gorilla/sessions"
 	"github.com/justinas/alice"
+	"github.com/kardianos/osext"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/unrolled/render"
 )
-
-var configPath string
 
 type App struct {
 	rndr   *render.Render
@@ -46,15 +47,24 @@ type globalPresenter struct {
 	SiteURL     string
 }
 
-func SetupApp(r *Router, logger appLogger, cookieSecretKey []byte, templateFolderPath string) *App {
+func SetupApp(r *Router, logger appLogger, cookieSecret []byte, templateFolderPath string) *App {
 	rndr := render.New(render.Options{
 		Directory:  templateFolderPath,
 		Extensions: []string{".html"},
 	})
 
-	cfg := config{
-		youtubeAPIKey:    viper.GetString("youtubeAPIKey"),
-		soundcloudAPIKey: viper.GetString("soundcloudAPIKey"),
+	cfg := config{}
+
+	if viper.GetBool("isDevelopment") {
+		cfg = config{
+			youtubeAPIKey:    viper.GetString("youtubeAPIKey"),
+			soundcloudAPIKey: viper.GetString("soundcloudAPIKey"),
+		}
+	} else {
+		cfg = config{
+			youtubeAPIKey:    os.Getenv("youtubeAPIKey"),
+			soundcloudAPIKey: os.Getenv("soundcloudAPIKey"),
+		}
 	}
 
 	gp := globalPresenter{
@@ -72,52 +82,68 @@ func SetupApp(r *Router, logger appLogger, cookieSecretKey []byte, templateFolde
 		cfg:    cfg,
 		bm:     bm,
 		logr:   logger,
-		store:  sessions.NewCookieStore(cookieSecretKey),
+		store:  sessions.NewCookieStore(cookieSecret),
 	}
 }
 
 func LoadConfiguration(pwd string) error {
 	viper.SetConfigName("happy-config")
 	viper.AddConfigPath(pwd)
-
-	return viper.ReadInConfig()
-}
-
-func init() {
-	flag.StringVar(&configPath, "config", "", "path to config file for this app")
+	devPath := pwd[:len(pwd)-3] + "src/happy/cmd/happyWeb/"
+	_, file, _, _ := runtime.Caller(1)
+	configPath := path.Dir(file)
+	viper.AddConfigPath(devPath)
+	viper.AddConfigPath(configPath)
+	return viper.ReadInConfig() // Find and read the config file
 }
 
 func main() {
-	flag.Parse()
+	pwd, err := osext.ExecutableFolder()
+	if err != nil {
+		log.Fatalf("cannot retrieve present working directory: %i", 0600, nil)
+	}
 
 	// Load configuration
-	err := LoadConfiguration(configPath)
+	err = LoadConfiguration(pwd)
 	if err != nil {
 		panic(errors.Errorf("Fatal reading config file: %s \n", err))
 	}
+	var dbURL, dbPort, dbUser, dbPass, dbName, cookieSecret, appPath string
 
+	if viper.GetBool("isDevelopment") {
+		dbURL = viper.GetString("databaseURL")
+		dbPort = viper.GetString("databasePort")
+		dbUser = viper.GetString("databaseUser")
+		dbPass = viper.GetString("databasePass")
+		dbName = viper.GetString("databaseName")
+		cookieSecret = viper.GetString("cookieSecret")
+		appPath = viper.GetString("path")
+	} else {
+		dbURL = os.Getenv("databaseURL")
+		dbPort = os.Getenv("databasePort")
+		dbUser = os.Getenv("databaseUser")
+		dbPass = os.Getenv("databasePass")
+		dbName = os.Getenv("databaseName")
+		cookieSecret = os.Getenv("cookieSecret")
+		appPath = os.Getenv("path")
+	}
 	// Set up application path
 
-	staticFilePath := path.Join(viper.GetString("path"), "static")
-	templateFolderPath := path.Join(viper.GetString("path"), "templates")
+	staticFilePath := path.Join(appPath, "static")
+	templateFolderPath := path.Join(appPath, "templates")
 
 	// Set up Database
+
 	db, err := happy.OpenDB(fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		viper.GetString("databaseURL"),
-		viper.GetInt("databasePort"),
-		viper.GetString("databaseUser"),
-		viper.GetString("databasePass"),
-		viper.GetString("databaseName")))
+		dbURL, dbPort, dbUser, dbPass, dbName))
 	if err != nil {
 		panic(errors.Errorf("Cannot connect to database: %s", err))
 	}
-
 	r := NewRouter()
 	logr := newLogger()
-	cookieSecretKey := viper.GetString("cookieSecret")
 
-	a := SetupApp(r, logr, []byte(cookieSecretKey), templateFolderPath)
+	a := SetupApp(r, logr, []byte(cookieSecret), templateFolderPath)
 
 	common := alice.New(context.ClearHandler, a.loggingHandler, a.recoverHandler)
 
