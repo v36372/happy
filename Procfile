@@ -1,1 +1,1 @@
-web: happyWeb -config /app/cmd/happyWeb/ -dev false
+web: happyWeb -config ../cmd/happyWeb/ -dev false
