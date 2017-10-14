@@ -35,6 +35,7 @@ type App struct {
 type config struct {
 	youtubeAPIKey    string
 	soundcloudAPIKey string
+	port             string
 }
 
 // localPresenter contains the fields nessessary for specific pages.
@@ -67,6 +68,7 @@ func SetupApp(r *Router, logger appLogger, cookieSecret []byte, templateFolderPa
 		cfg = config{
 			youtubeAPIKey:    os.Getenv("youtubeAPIKey"),
 			soundcloudAPIKey: os.Getenv("soundcloudAPIKey"),
+			port:             os.Getenv("PORT"),
 		}
 	}
 
@@ -178,7 +180,7 @@ func main() {
 	r.NotFound = def.Then(responseWriterWrapper(http.HandlerFunc(a.NotFoundHandler)))
 
 	fmt.Println("done handler func")
-	err = http.ListenAndServe(":3000", r)
+	err = http.ListenAndServe(":"+a.cfg.port, r)
 	fmt.Println("done server")
 	if err != nil {
 		log.Println("error on serve server %s", err)
