@@ -267,7 +267,7 @@ input[type="text"]:focus {
 	cursor: text;
 }
 i[type="submit"] {
-	margin-top:-9px;
+	margin-top:-13px;
 	z-index:2;
 	cursor: pointer;
 	position:absolute;

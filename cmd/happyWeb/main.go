@@ -108,22 +108,19 @@ func main() {
 	if err != nil {
 		panic(errors.Errorf("Fatal reading config file: %s \n", err))
 	}
-	var dbURL, dbPort, dbUser, dbPass, dbName, cookieSecret, appPath string
+	var dbURL, dbUser, dbPass, dbName, cookieSecret, appPath string
+	var dbPort int
 
 	if viper.GetBool("isDevelopment") {
 		dbURL = viper.GetString("databaseURL")
-		dbPort = viper.GetString("databasePort")
+		dbPort = viper.GetInt("databasePort")
 		dbUser = viper.GetString("databaseUser")
 		dbPass = viper.GetString("databasePass")
 		dbName = viper.GetString("databaseName")
 		cookieSecret = viper.GetString("cookieSecret")
 		appPath = viper.GetString("path")
 	} else {
-		dbURL = os.Getenv("databaseURL")
-		dbPort = os.Getenv("databasePort")
-		dbUser = os.Getenv("databaseUser")
-		dbPass = os.Getenv("databasePass")
-		dbName = os.Getenv("databaseName")
+		dbURL = os.Getenv("DATABASE_URL")
 		cookieSecret = os.Getenv("cookieSecret")
 		appPath = os.Getenv("path")
 	}
@@ -133,12 +130,19 @@ func main() {
 	templateFolderPath := path.Join(appPath, "templates")
 
 	// Set up Database
-
-	db, err := happy.OpenDB(fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		dbURL, dbPort, dbUser, dbPass, dbName))
-	if err != nil {
-		panic(errors.Errorf("Cannot connect to database: %s", err))
+	var db *happy.PGDB
+	if viper.GetBool("IsDevelopment") {
+		db, err = happy.OpenDB(fmt.Sprintf("host=%s port=%d user=%s "+
+			"password=%s dbname=%s sslmode=disable",
+			dbURL, dbPort, dbUser, dbPass, dbName))
+		if err != nil {
+			panic(errors.Errorf("Cannot connect to database: %s", err))
+		}
+	} else {
+		db, err = happy.OpenDB(dbURL)
+		if err != nil {
+			panic(errors.Errorf("Cannot connect to database: %s", err))
+		}
 	}
 	r := NewRouter()
 	logr := newLogger()
