@@ -92,7 +92,7 @@ func SetupApp(r *Router, logger appLogger, cookieSecret []byte, templateFolderPa
 func LoadConfiguration(pwd string) error {
 	viper.SetConfigName("happy-config")
 	viper.AddConfigPath(pwd)
-	devPath := pwd[:len(pwd)-3] + "src/happy/cmd/happyWeb/"
+	devPath := pwd[:len(pwd)-3] + "cmd/happyWeb/"
 	_, file, _, _ := runtime.Caller(1)
 	configPath := path.Dir(file)
 	viper.AddConfigPath(devPath)
