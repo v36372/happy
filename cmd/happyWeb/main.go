@@ -4,20 +4,22 @@ import (
 	"flag"
 	"fmt"
 	"happy"
+	"log"
 	"net/http"
 	"os"
 	"path"
+	"runtime"
 
 	"github.com/gorilla/context"
 	"github.com/gorilla/sessions"
 	"github.com/justinas/alice"
+	"github.com/kardianos/osext"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"github.com/unrolled/render"
 )
 
-var configPath string
 var dev string
 
 type App struct {
@@ -90,25 +92,29 @@ func SetupApp(r *Router, logger appLogger, cookieSecret []byte, templateFolderPa
 func LoadConfiguration(pwd string) error {
 	viper.SetConfigName("happy-config")
 	viper.AddConfigPath(pwd)
-
+	devPath := pwd[:len(pwd)-3] + "src/happy/cmd/happyWeb/"
+	_, file, _, _ := runtime.Caller(1)
+	configPath := path.Dir(file)
+	viper.AddConfigPath(devPath)
+	viper.AddConfigPath(configPath)
 	return viper.ReadInConfig() // Find and read the config file
 }
 
 func init() {
-	flag.StringVar(&configPath, "config", "", "path to config file for this app")
-	flag.StringVar(&dev, "dev", "", "build for local dev")
+	flag.StringVar(&dev, "dev", "true", "build for local dev")
 }
 
 func main() {
 	flag.Parse()
+	pwd, err := osext.ExecutableFolder()
+	if err != nil {
+		log.Fatalf("cannot retrieve present working directory: %i", 0600, nil)
+	}
 
 	// Load configuration
-	var err error
-	if dev == "true" {
-		err = LoadConfiguration(configPath)
-		if err != nil {
-			panic(errors.Errorf("Fatal reading config file: %s \n", err))
-		}
+	err = LoadConfiguration(pwd)
+	if err != nil {
+		panic(errors.Errorf("Fatal reading config file: %s \n", err))
 	}
 
 	var dbURL, dbUser, dbPass, dbName, cookieSecret, appPath string
