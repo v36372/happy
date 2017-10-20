@@ -8,6 +8,8 @@ var app = function(){
 	});
 	$("#button-pause").hide();
 
+	var Happy = new HappyPlayer([1,2,3]);
+
 	var index = 0;
 	var playlist = document.getElementsByClassName("track").length;
 	var currentPlaying;
@@ -179,10 +181,6 @@ var app = function(){
 		pauseSong(index);
 		$("#button-pause").hide()
 		$("#button-play").show()
-	});
-
-	$("#button-add").click(function(){
-		
 	});
 
 	$("#button-play").click(function(){

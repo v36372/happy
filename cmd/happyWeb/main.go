@@ -63,6 +63,7 @@ func SetupApp(r *Router, logger appLogger, cookieSecret []byte, templateFolderPa
 		cfg = config{
 			youtubeAPIKey:    viper.GetString("youtubeAPIKey"),
 			soundcloudAPIKey: viper.GetString("soundcloudAPIKey"),
+			port:             viper.GetString("port"),
 		}
 	} else {
 		cfg = config{
