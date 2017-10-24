@@ -44,7 +44,7 @@
 						</form>
 					</div>
 					</header>
-					<div class="playlist-scroll">
+					<div class="playlist-scroll" id="playlist-scroll">
 						<ol>
 							{{ range $i, $e := .SongList }}
 							<li id={{$i}} class="track" provider={{.Provider}} link={{.Link}} name={{.Name}} thumbnail={{.Thumbnail}}>

@@ -2,7 +2,6 @@ package happy
 
 import (
 	"errors"
-	"fmt"
 )
 
 type Song struct {
@@ -35,11 +34,10 @@ func (db *PGDB) CreateSong(song *Song) error {
 	return nil
 }
 
-func (db *PGDB) GetSongList(perBatch int) ([]*Song, error) {
+func (db *PGDB) GetSongList() ([]*Song, error) {
 	var songList []*Song
 
-	queryLimit := fmt.Sprintf(` LIMIT %d`, perBatch)
-	err := db.Select(&songList, fmt.Sprintf(`SELECT * FROM song ORDER BY id %s`, queryLimit))
+	err := db.Select(&songList, "SELECT * FROM song ORDER BY id")
 	if err != nil {
 		return nil, err
 	}

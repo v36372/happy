@@ -15,6 +15,23 @@ const SC = "soundcloud"
 const YT_LIST_VIDEO_API = "https://www.googleapis.com/youtube/v3/videos/"
 const SC_RESOLVE_API = "http://api.soundcloud.com/resolve/"
 
+func (a *App) GetSongHandler(db *happy.PGDB) HandlerWithError {
+	return func(w http.ResponseWriter, req *http.Request) error {
+		songList, err := db.GetSongList()
+		if err != nil {
+			a.logr.Log("error when getting song list: %s", err)
+		}
+
+		err = json.NewEncoder(w).Encode(songList)
+		if err != nil {
+			a.logr.Log("error when return json %s", err)
+			return newAPIError(500, "error when return json %s", err)
+		}
+
+		return nil
+	}
+}
+
 func (a *App) CreateSongHandler(db *happy.PGDB) HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
 		songLink := req.FormValue("link")
