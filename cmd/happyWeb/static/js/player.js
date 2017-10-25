@@ -116,5 +116,6 @@
 
 	if (typeof window !== 'undefined'){
 		window.HappyPlayer = HappyPlayer;
+		window.Happy = {};
 	}
 }());

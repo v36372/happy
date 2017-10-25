@@ -35,7 +35,7 @@ func (db *PGDB) CreateSong(song *Song) error {
 }
 
 func (db *PGDB) GetSongList() ([]*Song, error) {
-	var songList []*Song
+	songList := []*Song{}
 
 	err := db.Select(&songList, "SELECT * FROM song ORDER BY id")
 	if err != nil {

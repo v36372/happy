@@ -190,10 +190,6 @@ var app = function(){
 		} else playSong(index, true);
 	});
 
-	$(".track").click(function(event){
-		var el = event.currentTarget;
-		playSong(el.id, false)
-	})
 };
 
 function onYouTubeIframeAPIReady() {
