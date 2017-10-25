@@ -45,19 +45,6 @@
 					</div>
 					</header>
 					<div class="playlist-scroll" id="playlist-scroll">
-						<ol>
-							{{ range $i, $e := .SongList }}
-							<li id={{$i}} class="track" provider={{.Provider}} link={{.Link}} name={{.Name}} thumbnail={{.Thumbnail}}>
-							<a>
-								<img src={{.Thumbnail}}>
-								<div>
-									<h1>{{.Name}}</h1>
-								</div>
-							</a>
-							<hr>
-							</li>
-							{{ end }}
-						</ol>
 					</div>
 				</div>
 				<div class='front'>
@@ -100,5 +87,6 @@
 			</div>
 		</div>
 		</main>
+		<script src="static/js/index.bundle.js"></script>
 	</body>
 </html>

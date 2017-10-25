@@ -13,7 +13,7 @@ func (a *App) IndexHandler(db *happy.PGDB) HandlerWithError {
 		}{
 			localPresenter: &localPresenter{PageTitle: "Happy Music Player", PageURL: "/", globalPresenter: a.gp},
 		}
-		err = a.rndr.HTML(w, http.StatusOK, "index", pp)
+		err := a.rndr.HTML(w, http.StatusOK, "index", pp)
 		if err != nil {
 			a.logr.Log("error when rendering index page: %s", err)
 		}

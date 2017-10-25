@@ -25,7 +25,7 @@ func (a *App) GetSongHandler(db *happy.PGDB) HandlerWithError {
 		err = json.NewEncoder(w).Encode(songList)
 		if err != nil {
 			a.logr.Log("error when return json %s", err)
-			return newAPIError(500, "error when return json %s", err)
+			return newError(500, "error when return json %s", err)
 		}
 
 		return nil
