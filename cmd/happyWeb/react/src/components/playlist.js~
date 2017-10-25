@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Song from './song'
-import MyHappyPlayer from './happy'
+import Happy from './happy'
 
-var myPlayer
+var myHappyPlayer
 
 class Playlist extends React.Component {
 
@@ -18,8 +18,8 @@ class Playlist extends React.Component {
 	}
 
 	receiveSong(json) {
-		myPlayer = new MyHappyPlayer(json)
-		console.log(myPlayer)
+		myHappyPlayer = new Happy(json)
+		console.log(myHappyPlayer)
 		this.setState({
 			songArr: json
 		})
@@ -39,7 +39,7 @@ class Playlist extends React.Component {
 
 	onClickHandler(index) {
 		console.log("vo roi ne")
-		myPlayer.thinkAndDo({data:index,type:"onTrackClick"})
+		myHappyPlayer.thinkAndDo({data:index,type:"onTrackClick"})
 	}
 
 	renderPlaylist() {

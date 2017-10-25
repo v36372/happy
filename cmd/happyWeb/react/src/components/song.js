@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom'
 
 class Song extends React.Component {
 	render() {
-		const {name, thumbnail } = this.props
+		const {name, thumbnail, onClickHandler, index } = this.props
 		return (
-			<li className='track'>
+			<li className='track' onClick={() => onClickHandler(index)}>
 				<a>
 					<img src={thumbnail}/>
 					<div>

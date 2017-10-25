@@ -6,18 +6,26 @@
 
 	HappyPlayer.prototype = {
 		init: function(playList){
+			console.log("parent init")
 			var self = this
 
-			self._currentIndex = 0;
-			self._playListLength = playList.length;
-			self._playerState = "wait";
-			self._playList = playList.map(function(song, index){
+			self.currentIndex = 0;
+			self.playerState = "wait";
+			if (playList) {
+				self.playListLength = playList.length;
+				self.setPlaylist(playList);
+			}
+		},
+
+		setPlaylist: function(playList) {
+			var self = this;
+			self.playList = playList.map(function(song, index){
 				return {
 					song: song,
-					next: index == self._playListLength-1 ? 0 : index+1,
-					prev: index == 0 ? self._playListLength-1 : index-1,
+					next: index == self.playListLength-1 ? 0 : index+1,
+					prev: index == 0 ? self.playListLength-1 : index-1,
 				}
-			})
+			});
 		},
 
 		updateUI: function(){
@@ -30,82 +38,86 @@
 
 		thinkAndDo: function(event){
 			var self=this;
-			if (event == "onSongEnded") {
-				if (self._repeatOne) {
+			if (event.type == "onSongEnded") {
+				if (self.repeatOne) {
 					self.seekToBegin();
 				}
 				self.next();
 			}
-			if (event == "onPauseButtonClick") {
+			if (event.type == "onPauseButtonClick") {
 				self.pauseSong();
 			}
-			if (event == "onPlayButtonClick") {
-				if (self._playerState == "pause") {
+			if (event.type == "onPlayButtonClick") {
+				if (self.playerState == "pause") {
 					self.resumeSong();
 				} else {
-					self.playSong();
+					self.playSong(event);
 				}
 			}
-			if (event == "onNextButtonClick") {
+			if (event.type == "onNextButtonClick") {
 				self.next();
 			}
-			if (event == "onPrevButtonClick") {
+			if (event.type == "onPrevButtonClick") {
 				self.prev();
 			}
 			if (event == "onShuffleButtonClick") {
 				self.shuffleToggle();
 			}
-			if (event == "onRepeatButtonClick") {
+			if (event.type == "onRepeatButtonClick") {
 				self.repeatOneToggle();
+			}
+			if (event.type == "onTrackClick") {
+				self.playSong(event);
 			}
 			self.updateUI();
 		},
 
 		repeatOneToggle: function() {
 			var self = this;
-			self._repeatOne = !self._repeatOne;
+			self.repeatOne = !self.repeatOne;
 		},
 
 		shuffleToggle: function() {
 			var self = this;
-			if (self._shuffle) {
-				self._playList = self._originalPlayList;
+			if (self.shuffle) {
+				self.playList = self.originalPlayList;
 			} else {
-				self._playList = self._originalPlayList.slice();
+				self.playList = self.originalPlayList.slice();
 				var temp=null,j=0;
-				self._playList.forEach(function(e,i){
+				self.playList.forEach(function(e,i){
 					var j = Math.floor(Math.random() * (i + 1))
-					var temp = self._playList[i].song;
-					self._playList[i].song = self._playList[j].song;
-					self._playList[j].song = temp;
+					var temp = self.playList[i].song;
+					self.playList[i].song = self.playList[j].song;
+					self.playList[j].song = temp;
 				});
 			}
-			self._shuffle = !self._shuffle;
+			self.shuffle = !self.shuffle;
 		},
 
 		playSong: function(){
 			var self = this;
-			self._playerstate = "playing";
+			self.playerState = "playing";
+			console.log("parent run")
 		},
 
 		resumeSong: function(){
 			var self = this;
-			self._playerstate = "playing";
+			self.playerState = "playing";
 		},
 
 		pauseSong: function(){
 			var self = this;
-			self._playerstate = "pause";
+			self.playerState = "pause";
 		},
 
 		prev: function() {
 			var self = this;
-			self._currentIndex = self.playList[self._currentIndex].prev;
+			self.currentIndex = self.playList[self.currentIndex].prev;
 		},
 
 		next: function() {
 			var self=this;
-			self._currentIndex = self.playList[self._currentIndex].next;
+			self.currentIndex = self.playList[self.currentIndex].next;
 		},
 
 		onSongEnded: function(){
@@ -116,6 +128,5 @@
 
 	if (typeof window !== 'undefined'){
 		window.HappyPlayer = HappyPlayer;
-		window.Happy = {};
 	}
 }());
