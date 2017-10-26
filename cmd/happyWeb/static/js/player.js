@@ -6,11 +6,12 @@
 
 	HappyPlayer.prototype = {
 		init: function(playList){
-			console.log("parent init")
 			var self = this
 
 			self.currentIndex = 0;
 			self.playerState = "wait";
+			self.shuffle = false;
+			self.repeatOne = false;
 			if (playList) {
 				self.playListLength = playList.length;
 				self.setPlaylist(playList);
@@ -19,7 +20,7 @@
 
 		setPlaylist: function(playList) {
 			var self = this;
-			self.playList = playList.map(function(song, index){
+			self.originalPlayList = self.playList = playList.map(function(song, index){
 				return {
 					song: song,
 					next: index == self.playListLength-1 ? 0 : index+1,
@@ -38,9 +39,11 @@
 
 		thinkAndDo: function(event){
 			var self=this;
+			console.log("think and do", event)
 			if (event.type == "onSongEnded") {
 				if (self.repeatOne) {
 					self.seekToBegin();
+					return;
 				}
 				self.next();
 			}
@@ -51,6 +54,7 @@
 				if (self.playerState == "pause") {
 					self.resumeSong();
 				} else {
+					event.data = self.currentIndex;
 					self.playSong(event);
 				}
 			}
@@ -60,7 +64,7 @@
 			if (event.type == "onPrevButtonClick") {
 				self.prev();
 			}
-			if (event == "onShuffleButtonClick") {
+			if (event.type == "onShuffleButtonClick") {
 				self.shuffleToggle();
 			}
 			if (event.type == "onRepeatButtonClick") {
@@ -78,11 +82,28 @@
 		},
 
 		shuffleToggle: function() {
+			console.log("parent shuffle")
 			var self = this;
 			if (self.shuffle) {
+				var currentPlayingID = self.playList[self.currentIndex].song.id;
 				self.playList = self.originalPlayList;
+				self.currentIndex = self.playList.findIndex(function(el){return el.song.id == currentPlayingID});
+
 			} else {
-				self.playList = self.originalPlayList.slice();
+				var currentPlayingID = self.playList[self.currentIndex].song.id;
+				self.playList = self.originalPlayList.map(function(el){
+					return {
+						next: el.next,
+						prev: el.prev,
+						song: {
+							id: el.song.id,
+							name: el.song.name,
+							link: el.song.link,
+							provider: el.song.provider,
+							thumbnail: el.song.thumbnail
+						}
+					}
+				});
 				var temp=null,j=0;
 				self.playList.forEach(function(e,i){
 					var j = Math.floor(Math.random() * (i + 1))
@@ -90,14 +111,15 @@
 					self.playList[i].song = self.playList[j].song;
 					self.playList[j].song = temp;
 				});
+				self.currentIndex = self.playList.findIndex(function(el){return el.song.id == currentPlayingID});
 			}
 			self.shuffle = !self.shuffle;
 		},
 
-		playSong: function(){
+		playSong: function(event){
 			var self = this;
 			self.playerState = "playing";
-			console.log("parent run")
+			self.currentIndex = event.data;
 		},
 
 		resumeSong: function(){
@@ -112,17 +134,17 @@
 
 		prev: function() {
 			var self = this;
-			self.currentIndex = self.playList[self.currentIndex].prev;
+			self.playSong({data:self.playList[self.currentIndex].prev})
 		},
 
 		next: function() {
 			var self=this;
-			self.currentIndex = self.playList[self.currentIndex].next;
+			self.playSong({data:self.playList[self.currentIndex].next})
 		},
 
 		onSongEnded: function(){
 			var self = this;
-			self.thinkAndDo("onSongEnded");
+			self.thinkAndDo({type:"onSongEnded"});
 		},
 	};
 

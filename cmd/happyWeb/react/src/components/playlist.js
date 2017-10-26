@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom'
 import Song from './song'
 import MyHappyPlayer from './happy'
 
-var myPlayer
-
 class Playlist extends React.Component {
 
 	constructor(props) {
@@ -17,9 +15,43 @@ class Playlist extends React.Component {
 
 	}
 
+	broadcastEvent(event) {
+		switch (event.target.id){
+			case "button-pause":
+				window.MyPlayer.thinkAndDo({type:"onPauseButtonClick"});
+				break;
+			case "button-play":
+				window.MyPlayer.thinkAndDo({type:"onPlayButtonClick"});
+				break;
+			case "button-next":
+				window.MyPlayer.thinkAndDo({type:"onNextButtonClick"});
+				break;
+			case "button-prev":
+				window.MyPlayer.thinkAndDo({type:"onPrevButtonClick"});
+				break;
+			case "button-shuffle":
+				window.MyPlayer.thinkAndDo({type:"onShuffleButtonClick"});
+				break;
+			case "button-repeat":
+				window.MyPlayer.thinkAndDo({type:"onRepeatButtonClick"});
+				break;
+		}
+	}
+
 	receiveSong(json) {
-		myPlayer = new MyHappyPlayer(json)
-		console.log(myPlayer)
+		window.MyPlayer = new MyHappyPlayer(json)
+
+		$("#button-next").click(this.broadcastEvent);
+
+		$("#button-prev").click(this.broadcastEvent);
+
+		$("#button-pause").click(this.broadcastEvent);
+
+		$("#button-play").click(this.broadcastEvent);
+
+		$("#button-shuffle").click(this.broadcastEvent);
+
+		$("#button-repeat").click(this.broadcastEvent);
 		this.setState({
 			songArr: json
 		})
@@ -39,7 +71,7 @@ class Playlist extends React.Component {
 
 	onClickHandler(index) {
 		console.log("vo roi ne")
-		myPlayer.thinkAndDo({data:index,type:"onTrackClick"})
+		window.MyPlayer.thinkAndDo({data:index,type:"onTrackClick"})
 	}
 
 	renderPlaylist() {
@@ -47,8 +79,8 @@ class Playlist extends React.Component {
 		if (songArr) {
 			return songArr.map((song, index) => 
 				<Song key={index} index={index} onClickHandler={this.onClickHandler} 
-					name={song.name}
-					thumbnail={song.thumbnail}
+				name={song.name}
+				thumbnail={song.thumbnail}
 				/>);
 		}
 
@@ -59,11 +91,21 @@ class Playlist extends React.Component {
 		const playlist = this.renderPlaylist()
 		return (
 			<ol>
-				{playlist}
+			{playlist}
 			</ol>
-			)
+		)
 	}
 }
+
+$(".button-back").click(function(){
+	$(".player").toggleClass("playlist");
+});
+
+$("#hamburger-menu").click(function(){
+	$(".player").toggleClass("playlist");
+});
+
+$("#button-pause").hide();
 
 export default Playlist
 var node = document.querySelector('#playlist-scroll')

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"happy"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -13,6 +14,7 @@ import (
 const YT = "youtube"
 const SC = "soundcloud"
 const YT_LIST_VIDEO_API = "https://www.googleapis.com/youtube/v3/videos/"
+const YT_PLAYLIST_API = "https://content.googleapis.com/youtube/v3/playlistItems?maxResults=100&part=snippet"
 const SC_RESOLVE_API = "http://api.soundcloud.com/resolve/"
 
 func (a *App) GetSongHandler(db *happy.PGDB) HandlerWithError {
@@ -44,16 +46,27 @@ func (a *App) CreateSongHandler(db *happy.PGDB) HandlerWithError {
 
 		youtubeID := songLink[strings.Index(songLink, "=")+1:]
 
-		var song *happy.Song
+		var songs []*happy.Song
 		var err error
 		if strings.Index(songLink, YT) != -1 {
-			song, err = a.CreateSongFromYoutube(youtubeID)
+			u, err := url.Parse(songLink)
+			if err != nil {
+				a.logr.Log("error on CreateSongHandler, url parse fails: %s", err)
+				return newError(500, "error on CreateSongHandler, url parse fails: %s", err)
+			}
+
+			params := url.Query(u.RawQuery)
+			if u.Path == "/playlist" {
+				songs, err := a.CreateSongFromYoutubePlaylist(params["list"][0])
+			} else if u.Path == "/watch" {
+				songs, err = a.CreateSongFromYoutube(params["v"][0])
+			}
 			if err != nil {
 				a.logr.Log("error on CreateSongHandler, CreateSongFromYoutube fails: %s", err)
 				return newError(500, "error on CreateSongHandler, CreateSongFromYoutube fails: %s", err)
 			}
 		} else if strings.Index(songLink, SC) != -1 {
-			song, err = a.CreateSongFromSoundcloud(songLink)
+			songs, err = a.CreateSongFromSoundcloud(songLink)
 			if err != nil {
 				a.logr.Log("error on CreateSongHandler, CreateSongFromSoundcloud fails: %s", err)
 				return newError(500, "error on CreateSongHandler, CreateSongFromSoundcloud fails: %s", err)
@@ -64,7 +77,7 @@ func (a *App) CreateSongHandler(db *happy.PGDB) HandlerWithError {
 			return newError(400, "unsupported music: "+songLink, nil)
 		}
 
-		err = db.CreateSong(song)
+		err = db.CreateSong(songs)
 		if err != nil {
 			a.logr.Log("error on creating song: %s", err)
 			return newError(500, "error on creating song: %s", err)
@@ -75,7 +88,7 @@ func (a *App) CreateSongHandler(db *happy.PGDB) HandlerWithError {
 	}
 }
 
-func (a *App) CreateSongFromSoundcloud(link string) (*happy.Song, error) {
+func (a *App) CreateSongFromSoundcloud(link string) ([]*happy.Song, error) {
 	resp, err := http.Get(SC_RESOLVE_API + fmt.Sprintf("?url=%s&client_id=%s", link, a.cfg.soundcloudAPIKey))
 
 	if err != nil {
@@ -96,7 +109,44 @@ func (a *App) CreateSongFromSoundcloud(link string) (*happy.Song, error) {
 	}, nil
 }
 
-func (a *App) CreateSongFromYoutube(link string) (*happy.Song, error) {
+func (a *App) CreateSongFromYoutubePlaylist(playlistID string) ([]*happy.Song, error) {
+	resp, err := http.Get(YT_LIST_VIDEO_API + fmt.Sprintf("?playlistId=%s&key=%s", playlistID, a.cfg.youtubeAPIKey))
+
+	if err != nil {
+		return nil, err
+	}
+
+	ytVideoListResponse := happy.YTVideoListResponse{}
+	err = json.NewDecoder(resp.Body).Decode(&ytVideoListResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(ytVideoListResponse.Items) == 0 {
+		return nil, errors.Errorf("youtube video with id %s not found", link)
+	}
+
+	quality := []string{"maxres", "standard", "high", "medium", "default"}
+	thumbnails := ytVideoListResponse.Items[0].Snippet.Thumbnails
+	start := 0
+
+	for start < len(quality)-1 {
+		_, ok := thumbnails[quality[start]]
+		if ok {
+			break
+		}
+		start++
+	}
+
+	return &happy.Song{
+		Name:      ytVideoListResponse.Items[0].Snippet.Title,
+		Link:      ytVideoListResponse.Items[0].ID,
+		Provider:  "youtube",
+		Thumbnail: thumbnails[quality[start]].URL,
+	}, nil
+}
+
+func (a *App) CreateSongFromYoutube(videoID string) ([]*happy.Song, error) {
 	resp, err := http.Get(YT_LIST_VIDEO_API + fmt.Sprintf("?id=%s&part=snippet&key=%s", link, a.cfg.youtubeAPIKey))
 
 	if err != nil {

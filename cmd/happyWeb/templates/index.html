@@ -32,7 +32,7 @@
 					</a>
 					<div>
 						<iframe id="soundcloud-player" width="32px" height="32px" style="visibility:hidden;" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/346281388"></iframe>
-						<iframe id="youtube-player" type="text/html" width="0" height="0" src="https://www.youtube.com/embed/7-qGKqveZaM?enablejsapi=1" provider="youtube"></iframe>
+						<iframe id="youtube-player" type="text/html" width="0" height="0" src="https://www.youtube.com/embed/7-qGKqveZaM?enablejsapi=1&iv_load_policy=3" provider="youtube"></iframe>
 					</div>
 					<div class="button-add">
 						<form role="form" action="/song" method="post">
@@ -53,29 +53,29 @@
 					<hr>
 					<div class='meta'>
 						<div class='controls top'>
-							<a class='rewind skip' id="button-prev">
-								<i class="fa fa-backward fa-2x" aria-hidden="true"></i>
+							<a class='rewind skip'>
+								<i id="button-prev" class="fa fa-backward fa-2x" aria-hidden="true"></i>
 							</a>
 							<a class='play'>
 								<i id="button-play" class="fa fa-play fa-2x" aria-hidden="true"></i>
 								<i id="button-pause" class="fa fa-pause fa-2x" aria-hidden="true"></i>
 							</a>
-							<a class='forward skip' id="button-next">
-								<i class="fa fa-forward fa-2x" aria-hidden="true"></i>
+							<a class='forward skip'>
+								<i id="button-next" class="fa fa-forward fa-2x" aria-hidden="true"></i>
 							</a>
 						</div>
 						<div class='info'>
 							<h2 id="song-name"></h2>
 						</div>
 						<div class='controls bottom'>
-							<a id="button-heart">
-								<i class="fa fa-heart fa-2x" aria-hidden="true"></i>
+							<a>
+								<i id="button-heart" class="fa fa-heart fa-2x" aria-hidden="true"></i>
 							</a>
-							<a id="button-shuffle">
-								<i class="fa fa-random fa-2x" aria-hidden="true"></i>
+							<a>
+								<i id="button-shuffle" class="fa fa-random fa-2x" aria-hidden="true"></i>
 							</a>
-							<a id="button-repeat">
-								<i class="fa fa-repeat fa-2x" aria-hidden="true"></i>
+							<a>
+								<i id="button-repeat" class="fa fa-repeat fa-2x" aria-hidden="true"></i>
 							</a>
 							<a class='flip' id="hamburger-menu">
 								<i class="fa fa-bars fa-2x" aria-hidden="true"></i>
