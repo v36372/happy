@@ -12,6 +12,11 @@ type Item struct {
 type Snippet struct {
 	Title      string     `json:"title"`
 	Thumbnails Thumbnails `json:"thumbnails"`
+	ResourceID ResourceID `json:"resourceId"`
+}
+
+type ResourceID struct {
+	VideoID string `json:"videoId"`
 }
 
 type Thumbnails map[string]*Thumbnail

@@ -12,22 +12,20 @@ type Song struct {
 	Thumbnail string `json:"thumbnail" db:"thumbnail"`
 }
 
-func (db *PGDB) CreateSong(song *Song) error {
+func (db *PGDB) CreateSong(songs []*Song) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return err
 	}
 
-	if song == nil {
-		return errors.New("error when creating song, song is nil")
+	if len(songs) == 0 {
+		return errors.New("error when creating song, empty array")
 	}
 
-	tx.QueryRow(`INSERT INTO song(name, link, provider, thumbnail) 
+	for _, song := range songs {
+		tx.Exec(`INSERT INTO song(name, link, provider, thumbnail) 
 		VALUES ($1, $2, $3, $4)`,
-		song.Name, song.Link, song.Provider, song.Thumbnail)
-	if err != nil {
-		tx.Rollback()
-		return err
+			song.Name, song.Link, song.Provider, song.Thumbnail)
 	}
 	tx.Commit()
 
