@@ -2,6 +2,9 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/gorilla/context"
+	"github.com/julienschmidt/httprouter"
 )
 
 // saveFlash is a utility helper to save Flashes to the session cookie.
@@ -24,4 +27,10 @@ func (a *App) getFlashes(w http.ResponseWriter, req *http.Request) []interface{}
 	fs := session.Flashes()
 	session.Save(req, w)
 	return fs
+}
+
+// GetParamsObj returns a httprouter params object given the request.
+func GetParamsObj(req *http.Request) httprouter.Params {
+	ps := context.Get(req, Params).(httprouter.Params)
+	return ps
 }

@@ -154,8 +154,23 @@ main {
 	display: flex;
 	padding: 12px;
 }
+.track-name {
+	width: 80%;
+}
+
 .back a:active {
 	background: #0B0B0B;
+}
+
+.button-delete {
+	right: 2px;
+	align-self:center;
+}
+
+.button-delete:hover  {
+	color: #EB2045;
+	-webkit-transform: scale(1.1);
+	transform: scale(1.1);
 }
 
 .button-back:hover  {

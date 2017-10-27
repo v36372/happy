@@ -34,6 +34,20 @@ func (a *App) GetSongHandler(db *happy.PGDB) HandlerWithError {
 	}
 }
 
+func (a *App) DeleteSongHandler(db *happy.PGDB) HandlerWithError {
+	return func(w http.ResponseWriter, req *http.Request) error {
+		params := GetParamsObj(req)
+		songID := params.ByName("id")
+
+		err := db.DeleteSong(songID)
+		if err != nil {
+			a.logr.Log("error when deleting song: %s", err)
+		}
+
+		return nil
+	}
+}
+
 func (a *App) CreateSongHandler(db *happy.PGDB) HandlerWithError {
 	return func(w http.ResponseWriter, req *http.Request) error {
 		songLink := req.FormValue("link")
@@ -114,7 +128,7 @@ func (a *App) CreateSongFromSoundcloud(link string) ([]*happy.Song, error) {
 		}
 
 		songs = append(songs, newSong)
-	} else {
+	} else if scResolveResponse.Kind == "playlist" {
 		for _, track := range scResolveResponse.Tracks {
 			newSong := &happy.Song{
 				Name:      track.Title,
@@ -124,6 +138,8 @@ func (a *App) CreateSongFromSoundcloud(link string) ([]*happy.Song, error) {
 			}
 			songs = append(songs, newSong)
 		}
+	} else {
+		return songs, errors.Errorf("unsupported soundcloud link: %s", link)
 	}
 	return songs, nil
 }

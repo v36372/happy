@@ -42,3 +42,14 @@ func (db *PGDB) GetSongList() ([]*Song, error) {
 
 	return songList, nil
 }
+
+func (db *PGDB) DeleteSong(songID string) error {
+	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
+	tx.Exec(`DELETE FROM song WHERE id = $1`, songID)
+	tx.Commit()
+
+	return nil
+}

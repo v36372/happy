@@ -167,6 +167,7 @@ func main() {
 
 	r.Post("/song", common.Then(a.Wrap(a.CreateSongHandler(db))))
 	r.Get("/song", common.Then(a.Wrap(a.GetSongHandler(db))))
+	r.Delete("/song/:id", common.Then(a.Wrap(a.DeleteSongHandler(db))))
 	r.Get("/about", common.Then(a.Wrap(a.AboutHandler())))
 
 	r.ServeFiles("/static/*filepath", http.Dir(staticFilePath))

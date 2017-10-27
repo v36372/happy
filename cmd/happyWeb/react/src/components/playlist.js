@@ -8,6 +8,7 @@ class Playlist extends React.Component {
 	constructor(props) {
 		super(props)
 		this.onClickHandler = this.onClickHandler.bind(this)
+		this.onClickDeleteHandler = this.onClickDeleteHandler.bind(this)
 
 		this.state = {
 			songArr: []
@@ -57,7 +58,7 @@ class Playlist extends React.Component {
 		})
 	}
 
-	componentDidMount() {
+	getSong() {
 		fetch(`http://localhost:3000/song`, {
 			method: 'GET',
 			headers: {
@@ -69,8 +70,34 @@ class Playlist extends React.Component {
 			.then(json => this.receiveSong(json))
 	}
 
+	delSong(id) {
+		fetch(`http://localhost:3000/song/` + id, {
+			method: 'DELETE',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type':'application/json',
+			},
+		})
+	}
+
+	componentDidMount() {
+		this.getSong()
+	}
+
+	onClickDeleteHandler(id, index) {
+		console.log("vo delete roi ne")
+		this.delSong(id)
+		window.MyPlayer.thinkAndDo({data:index,type:"onTrackDelete"})
+		var temp = this.state.songArr.slice()
+		temp = temp.filter(function(_, i){
+				return i != index;
+		})
+		this.setState({
+			songArr: temp
+		})
+	}
+
 	onClickHandler(index) {
-		console.log("vo roi ne")
 		window.MyPlayer.thinkAndDo({data:index,type:"onTrackClick"})
 	}
 
@@ -78,9 +105,14 @@ class Playlist extends React.Component {
 		const { songArr } = this.state;
 		if (songArr) {
 			return songArr.map((song, index) => 
-				<Song key={index} index={index} onClickHandler={this.onClickHandler} 
-				name={song.name}
-				thumbnail={song.thumbnail}
+				<Song 
+					key={index} 
+					index={index} 
+					id={song.id}
+					onClickHandler={this.onClickHandler} 
+					onClickDeleteHandler={this.onClickDeleteHandler} 
+					name={song.name}
+					thumbnail={song.thumbnail}
 				/>);
 		}
 

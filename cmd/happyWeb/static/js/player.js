@@ -73,7 +73,16 @@
 			if (event.type == "onTrackClick") {
 				self.playSong(event);
 			}
+			if (event.type == "onTrackDelete") {
+				self.delSong(event);
+			}
 			self.updateUI();
+		},
+
+		delSong: function(event) {
+			this.playList = this.playList.filter(function(_, index){
+				return index != event.data;
+			})
 		},
 
 		repeatOneToggle: function() {
