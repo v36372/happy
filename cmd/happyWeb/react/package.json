@@ -4,6 +4,7 @@
   "description": "Happy music player",
   "main": "index.js",
   "author": "Justin NG @v36372",
+  "repository": "https://github.com/v36372/happy/",
   "dependencies": {
     "babel-core": "^6",
     "babel-loader": "^7.0.0",

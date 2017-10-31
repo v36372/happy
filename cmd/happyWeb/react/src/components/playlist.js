@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Song from './song'
 import MyHappyPlayer from './happy'
+import config from '../config'
 
 class Playlist extends React.Component {
 
@@ -59,7 +60,7 @@ class Playlist extends React.Component {
 	}
 
 	getSong() {
-		fetch(`http://localhost:3000/song`, {
+		fetch(config.API_SERVER+"/song", {
 			method: 'GET',
 			headers: {
 				'Accept': 'application/json',
@@ -71,7 +72,7 @@ class Playlist extends React.Component {
 	}
 
 	delSong(id) {
-		fetch(`http://localhost:3000/song/` + id, {
+		fetch(config.API_SERVER + "/song/" + id, {
 			method: 'DELETE',
 			headers: {
 				'Accept': 'application/json',
