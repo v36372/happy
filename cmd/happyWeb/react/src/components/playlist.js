@@ -60,6 +60,7 @@ class Playlist extends React.Component {
 	}
 
 	getSong() {
+		console.log(config)
 		fetch(config.API_SERVER+"/song", {
 			method: 'GET',
 			headers: {
