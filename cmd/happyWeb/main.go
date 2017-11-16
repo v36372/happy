@@ -161,7 +161,7 @@ func main() {
 
 	a := SetupApp(r, logr, []byte(cookieSecret), templateFolderPath)
 
-	common := alice.New(context.ClearHandler, a.loggingHandler, a.recoverHandler)
+	common := alice.New(a.corsMiddleware, context.ClearHandler, a.loggingHandler, a.recoverHandler)
 
 	r.Get("/", common.Then(a.Wrap(a.IndexHandler(db))))
 

@@ -35,6 +35,16 @@ func newLogger() *happyLogger {
 }
 
 // loggingHandler middleware logs all request
+func (a *App) corsMiddleware(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		if req.Method == "OPTIONS" {
+			http.StatusText(204)
+		}
+	}
+	return http.HandlerFunc(fn)
+}
+
+// loggingHandler middleware logs all request
 func (a *App) loggingHandler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, req *http.Request) {
 		t1 := happy.TimeNow()
