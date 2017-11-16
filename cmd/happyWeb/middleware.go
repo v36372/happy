@@ -40,6 +40,7 @@ func (a *App) corsMiddleware(next http.Handler) http.Handler {
 		if req.Method == "OPTIONS" {
 			http.StatusText(204)
 		}
+		next.ServeHTTP(w, req)
 	}
 	return http.HandlerFunc(fn)
 }
