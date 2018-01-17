@@ -31,6 +31,7 @@ function MyHappyPlayer(playList) {
 					'onReady': function() {
 						console.log("readgy");
 						ytPlayer.setPlaybackQuality("small");
+						ytPlayer.loadVideoById("7-qGKqveZaM", 0, 'small');
 						ytPlayer.playVideo();
 					},
 				}
